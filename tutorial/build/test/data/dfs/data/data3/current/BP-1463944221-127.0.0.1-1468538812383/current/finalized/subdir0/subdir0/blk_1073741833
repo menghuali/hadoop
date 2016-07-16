@@ -1,0 +1,1 @@
+fjobId=job_1468538833572_0001,submitTime=1468538839099,launchTime=1468538847746,firstMapTaskLaunchTime=1468538850054,firstReduceTaskLaunchTime=0,finishTime=1468538881833,resourcesPerMap=1024,resourcesPerReduce=1024,numMaps=1,numReduces=1,user=mli,queue=default,status=FAILED,mapSlotSeconds=25,reduceSlotSeconds=0,jobName=hadoop.tutorial.wordcount2.WordCounter
