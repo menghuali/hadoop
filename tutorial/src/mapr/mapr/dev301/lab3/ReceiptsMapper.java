@@ -1,4 +1,4 @@
-package lab3;
+package mapr.dev301.lab3;
 
 import java.io.IOException;
 import java.util.StringTokenizer;

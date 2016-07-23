@@ -1,4 +1,4 @@
-package lab3;
+package mapr.dev301.lab3;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
