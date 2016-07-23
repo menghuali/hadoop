@@ -15,8 +15,8 @@ public class UniversityReducer extends Reducer<Text, IntWritable, Text, FloatWri
 			throws IOException, InterruptedException {
 		int sum = 0;
 		int count = 0;
-		int min = Integer.MIN_VALUE;
-		int max = Integer.MAX_VALUE;
+		int min = Integer.MAX_VALUE;
+		int max = Integer.MIN_VALUE;
 		for (IntWritable iw : values) {
 			int value = iw.get();
 			min = Math.min(min, value);

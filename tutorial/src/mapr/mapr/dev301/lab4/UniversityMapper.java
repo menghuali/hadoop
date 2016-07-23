@@ -33,7 +33,7 @@ public class UniversityMapper extends Mapper<LongWritable, Text, Text, IntWritab
 			outputValue.set(getIntFieldValueFromRecord(record, SAT_MATH));
 			context.write(outputKey, outputValue);
 		} catch (Exception e) {
-			LOG.warn("Failed to pass record #" + key.get(), e);
+			LOG.warn("Failed to parse record #" + key.get(), e);
 		}
 	}
 

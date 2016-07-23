@@ -4,6 +4,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.FloatWritable;
+import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
@@ -25,6 +26,7 @@ public class UniversityDriver extends Configured implements Tool {
 		Job job = Job.getInstance(conf, UniversityDriver.class.getName());
 		job.setJarByClass(getClass());
 		job.setMapperClass(UniversityMapper.class);
+		job.setMapOutputValueClass(IntWritable.class);
 		job.setReducerClass(UniversityReducer.class);
 		job.setInputFormatClass(TextInputFormat.class);
 		job.setOutputKeyClass(Text.class);

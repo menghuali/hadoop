@@ -8,6 +8,8 @@ import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mrunit.mapreduce.MapDriver;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 public class UniversityMapperTest extends UniversityMapper {
@@ -40,22 +42,31 @@ public class UniversityMapperTest extends UniversityMapper {
 			+ "(social scale:1-5 2)" + LINE_SEPARATOR + "(quality-of-life scale:1-5 2)" + LINE_SEPARATOR
 			+ "(academic-emphasis business-administration)" + LINE_SEPARATOR + "(academic-emphasis biology))";
 
+	private MapDriver<LongWritable, Text, Text, IntWritable> dr;
+
+	@Before
+	public void setUp() throws Exception {
+		dr = new MapDriver<>(new UniversityMapper());
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		dr = null;
+	}
+
 	@Test
 	public void testMapLongWritableTextContext() throws Exception {
-		MapDriver<LongWritable, Text, Text, IntWritable> dr = new MapDriver<>(new UniversityMapper());
 		dr.withInput(new LongWritable(0), new Text(SAMPLE_RECORD)).withOutput(new Text("satv"), new IntWritable(500))
 				.withOutput(new Text("satm"), new IntWritable(475)).runTest();
 	}
 
 	@Test
 	public void testMapLongWritableTextContext_NoSATVerbal() throws Exception {
-		MapDriver<LongWritable, Text, Text, IntWritable> dr = new MapDriver<>(new UniversityMapper());
 		dr.withInput(new LongWritable(0), new Text(SAMPLE_RECORD_NOT_SAT_VERBAL)).runTest();
 	}
 
 	@Test
 	public void testMapLongWritableTextContext_NoSATMath() throws Exception {
-		MapDriver<LongWritable, Text, Text, IntWritable> dr = new MapDriver<>(new UniversityMapper());
 		dr.withInput(new LongWritable(0), new Text(SAMPLE_RECORD_NO_SAT_MATH)).runTest();
 	}
 
