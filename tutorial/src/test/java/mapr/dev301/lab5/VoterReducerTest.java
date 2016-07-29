@@ -21,7 +21,7 @@ public class VoterReducerTest extends VoterReducer {
 	}
 
 	@Test
-	public void testReduceTextIterableOfIntWritableContext() {
+	public void reduce() {
 		new ReduceDriver<Text, IntWritable, Text, FloatWritable>().withReducer(new VoterReducer())
 				.withInput(new Text("republic"),
 						Arrays.asList(
