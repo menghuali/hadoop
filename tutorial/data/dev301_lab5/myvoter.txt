@@ -1,0 +1,8 @@
+1,nick young,22,democrat,324.15,3956
+2,ethan brown,32,democrat,117.57,19228
+3,ulysses nixon,42,democrat,819.34,27477
+4,micheal jordon,20,green,819.34,27477
+5,irene thompson,30,green,158.22,10006
+6,scottie pippen,40,green,158.22,10006
+7,james,25,democrat
+8,mike,25,green
