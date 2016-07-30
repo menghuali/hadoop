@@ -1,6 +1,10 @@
 package mapr.dev301.lab5;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.io.File;
+import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -9,10 +13,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import myutil.MROutputReader;
+
 public class VoterDriverTest extends VoterDriver {
 
-	private static final Path OUTPUT_PATH = new Path("./tmp/dev301_lab5");
-	private static final String INPUT_ROOT = "./data/dev301_lab5";
+	private static final Path OUTPUT_DIR = new Path("./tmp/dev301_lab5");
+	private static final Path OUTPUT_FILE = new Path(OUTPUT_DIR, new Path("part-r-00000"));
+	private static final String INPUT_DIR = "./data/dev301_lab5";
 	private VoterDriver driver;
 
 	@Before
@@ -25,7 +32,7 @@ public class VoterDriverTest extends VoterDriver {
 		driver.setConf(conf);
 
 		FileSystem fs = FileSystem.getLocal(conf);
-		fs.delete(OUTPUT_PATH, true);
+		fs.delete(OUTPUT_DIR, true);
 	}
 
 	@After
@@ -35,8 +42,18 @@ public class VoterDriverTest extends VoterDriver {
 
 	@Test
 	public void run() throws Exception {
-		int exitCode = driver.run(new String[] { INPUT_ROOT, OUTPUT_PATH.toString() });
+		int exitCode = driver.run(new String[] { INPUT_DIR, OUTPUT_DIR.toString() });
 		assertEquals(0, exitCode);
+		
+		Map<String, String> result = MROutputReader.read(new File(OUTPUT_FILE.toString()));
+		assertNotNull(result);
+		assertEquals(6, result.size());
+		assertEquals("32.0", result.get("democrat_age_mean"));
+		assertEquals("22.0", result.get("democrat_age_min"));
+		assertEquals("42.0", result.get("democrat_age_max"));
+		assertEquals("30.0", result.get("green_age_mean"));
+		assertEquals("20.0", result.get("green_age_min"));
+		assertEquals("40.0", result.get("green_age_max"));
 	}
 
 }

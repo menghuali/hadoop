@@ -1,0 +1,2 @@
+democrat_age_mean	32.0
+democrat_age_min	22.0
