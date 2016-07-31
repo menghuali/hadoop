@@ -16,7 +16,9 @@ public class UniversityMapper1 extends Mapper<LongWritable, Text, Text, IntWrita
 	private static char FIELD_END = ')';
 	private static final Log LOG = LogFactory.getLog(UniversityMapper1.class);
 
-	private Text outk = new Text();
+	static final Text VERBAL_KEY = new Text("verbal");
+	static final Text MATH_KEY = new Text("math");
+
 	private IntWritable outv = new IntWritable();
 
 	static enum CounterEnum {
@@ -77,14 +79,12 @@ public class UniversityMapper1 extends Mapper<LongWritable, Text, Text, IntWrita
 		}
 
 		// output verbal value
-		outk.set("verbal");
 		outv.set(verbal);
-		context.write(outk, outv);
+		context.write(VERBAL_KEY, outv);
 
 		// output math value
-		outk.set("math");
 		outv.set(math);
-		context.write(outk, outv);
+		context.write(MATH_KEY, outv);
 	}
 
 }

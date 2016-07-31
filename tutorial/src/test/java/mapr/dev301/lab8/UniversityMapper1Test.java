@@ -12,8 +12,6 @@ public class UniversityMapper1Test extends UniversityMapper1 {
 	private static final LongWritable ONE = new LongWritable(1L);
 	private static final LongWritable TWO = new LongWritable(2L);
 	private static final String EOL = System.getProperty("line.separator");
-	private static final Text VERBAL_KEY = new Text("verbal");
-	private static final Text MATH_KEY = new Text("math");
 
 	private MapDriver<LongWritable, Text, Text, IntWritable> driver;
 
