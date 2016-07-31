@@ -1,7 +1,9 @@
 package hadoop.tutorial.wordcount2;
 
+import java.io.File;
 import java.net.URI;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.filecache.DistributedCache;
 import org.apache.hadoop.fs.Path;
@@ -15,17 +17,23 @@ public class WordCounterTestMiniCluster extends ClusterMapReduceTestCase {
 
 	@Before
 	protected void setUp() throws Exception {
+		if (System.getProperty("test.build.data") == null) {
+			System.setProperty("test.build.data", "./tmp/WordCounterTestMiniCluster/data");
+		}
+		if (System.getProperty("hadoop.log.dir") == null) {
+			System.setProperty("hadoop.log.dir", "./tmp/WordCounterTestMiniCluster/log");
+		}
+		File dataDir = new File("./tmp/WordCounterTestMiniCluster/data");
+		if (dataDir.exists())
+			FileUtils.deleteDirectory(dataDir);
+		File logDir = new File("./tmp/WordCounterTestMiniCluster/log");
+		if (logDir.exists())
+			FileUtils.deleteDirectory(logDir);
 		super.setUp();
 	}
 
 	@After
 	protected void tearDown() throws Exception {
-		if (System.getProperty("test.build.data") == null) {
-			System.setProperty("test.build.data", "/tmp");
-		}
-		if (System.getProperty("hadoop.log.dir") == null) {
-			System.setProperty("hadoop.log.dir", "/tmp");
-		}
 		super.tearDown();
 	}
 
