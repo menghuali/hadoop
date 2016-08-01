@@ -1,5 +1,7 @@
 package mapr.dev301.lab8;
 
+import java.io.IOException;
+
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -10,9 +12,6 @@ import org.junit.Test;
 
 public class UniversityMapper1Test extends UniversityMapper1 {
 	private static final LongWritable ONE = new LongWritable(1L);
-	private static final LongWritable TWO = new LongWritable(2L);
-	private static final String EOL = System.getProperty("line.separator");
-
 	private MapDriver<LongWritable, Text, Text, IntWritable> driver;
 
 	@Before
@@ -26,107 +25,31 @@ public class UniversityMapper1Test extends UniversityMapper1 {
 	}
 
 	@Test
-	public void mapBadMath() throws Exception {
-		driver.withInput(ONE,
-				new Text("(def-instance Adelphi" + "(state newyork)" + EOL + "(control private)" + EOL
-						+ "(no-of-students thous:5-10)" + EOL + "(male:female ratio:30:70)" + EOL
-						+ "(student:faculty ratio:15:1)" + EOL + "(sat verbal 500)" + EOL + "(sat math 47B)" + EOL
-						+ "(expenses thous$:7-10)" + EOL + "(percent-financial-aid 60)" + EOL
-						+ "(no-applicants thous:4-7)" + EOL + "(percent-admittance 70)" + EOL + "(percent-enrolled 40)"
-						+ EOL + "(academics scale:1-5 2)" + EOL + "(social scale:1-5 2)" + EOL
-						+ "(quality-of-life scale:1-5 2)" + EOL + "(academic-emphasis business-administration)" + EOL
-						+ "(academic-emphasis biology))"))
-				.withInput(TWO,
-						new Text("(def-instance Adelphi" + "(state newyork)" + EOL + "(control private)" + EOL
-								+ "(no-of-students thous:5-10)" + EOL + "(male:female ratio:30:70)" + EOL
-								+ "(student:faculty ratio:15:1)" + EOL + "(sat verbal 500)" + EOL + "(sat math 47B)"
-								+ EOL + "(expenses thous$:7-10)" + EOL + "(percent-financial-aid 60)" + EOL
-								+ "(no-applicants thous:4-7)" + EOL + "(percent-admittance 70)" + EOL
-								+ "(percent-enrolled 40)" + EOL + "(academics scale:1-5 2)" + EOL
-								+ "(social scale:1-5 2)" + EOL + "(quality-of-life scale:1-5 2)" + EOL
-								+ "(academic-emphasis business-administration)" + EOL + "(academic-emphasis biology))"))
-				.withCounter(UniversityMapper1.CounterEnum.BAD_MATH, 2L).runTest();
+	public void map() throws IOException {
+		driver.withInput(ONE, new Text("10,20")).withOutput(VERBAL_KEY, new IntWritable(10))
+				.withOutput(MATH_KEY, new IntWritable(20)).runTest();
+
 	}
 
 	@Test
-	public void mapBadVerbal() throws Exception {
-		driver.withInput(ONE,
-				new Text("(def-instance Adelphi" + "(state newyork)" + EOL + "(control private)" + EOL
-						+ "(no-of-students thous:5-10)" + EOL + "(male:female ratio:30:70)" + EOL
-						+ "(student:faculty ratio:15:1)" + EOL + "(sat verbal 50A)" + EOL + "(sat math 475)" + EOL
-						+ "(expenses thous$:7-10)" + EOL + "(percent-financial-aid 60)" + EOL
-						+ "(no-applicants thous:4-7)" + EOL + "(percent-admittance 70)" + EOL + "(percent-enrolled 40)"
-						+ EOL + "(academics scale:1-5 2)" + EOL + "(social scale:1-5 2)" + EOL
-						+ "(quality-of-life scale:1-5 2)" + EOL + "(academic-emphasis business-administration)" + EOL
-						+ "(academic-emphasis biology))"))
-				.withInput(TWO,
-						new Text("(def-instance Adelphi" + "(state newyork)" + EOL + "(control private)" + EOL
-								+ "(no-of-students thous:5-10)" + EOL + "(male:female ratio:30:70)" + EOL
-								+ "(student:faculty ratio:15:1)" + EOL + "(sat verbal 50A)" + EOL + "(sat math 475)"
-								+ EOL + "(expenses thous$:7-10)" + EOL + "(percent-financial-aid 60)" + EOL
-								+ "(no-applicants thous:4-7)" + EOL + "(percent-admittance 70)" + EOL
-								+ "(percent-enrolled 40)" + EOL + "(academics scale:1-5 2)" + EOL
-								+ "(social scale:1-5 2)" + EOL + "(quality-of-life scale:1-5 2)" + EOL
-								+ "(academic-emphasis business-administration)" + EOL + "(academic-emphasis biology))"))
-				.withCounter(UniversityMapper1.CounterEnum.BAD_VERBAL, 2L).runTest();
+	public void mapBadRecord() throws IOException {
+		driver.withInput(ONE, new Text("10,20,30")).withInput(ONE, new Text("10"))
+				.withCounter(CounterEnum.BAD_RECORD, 2L).runTest();
+
 	}
 
 	@Test
-	public void mapMissingMath() throws Exception {
-		driver.withInput(ONE,
-				new Text("(def-instance Adelphi" + "(state newyork)" + EOL + "(control private)" + EOL
-						+ "(no-of-students thous:5-10)" + EOL + "(male:female ratio:30:70)" + EOL
-						+ "(student:faculty ratio:15:1)" + EOL + "(sat verbal 500)" + EOL + "(expenses thous$:7-10)"
-						+ EOL + "(percent-financial-aid 60)" + EOL + "(no-applicants thous:4-7)" + EOL
-						+ "(percent-admittance 70)" + EOL + "(percent-enrolled 40)" + EOL + "(academics scale:1-5 2)"
-						+ EOL + "(social scale:1-5 2)" + EOL + "(quality-of-life scale:1-5 2)" + EOL
-						+ "(academic-emphasis business-administration)" + EOL + "(academic-emphasis biology))"))
-				.withInput(TWO,
-						new Text("(def-instance Adelphi" + "(state newyork)" + EOL + "(control private)" + EOL
-								+ "(no-of-students thous:5-10)" + EOL + "(male:female ratio:30:70)" + EOL
-								+ "(student:faculty ratio:15:1)" + EOL + "(sat verbal 500)" + EOL
-								+ "(expenses thous$:7-10)" + EOL + "(percent-financial-aid 60)" + EOL
-								+ "(no-applicants thous:4-7)" + EOL + "(percent-admittance 70)" + EOL
-								+ "(percent-enrolled 40)" + EOL + "(academics scale:1-5 2)" + EOL
-								+ "(social scale:1-5 2)" + EOL + "(quality-of-life scale:1-5 2)" + EOL
-								+ "(academic-emphasis business-administration)" + EOL + "(academic-emphasis biology))"))
-				.withCounter(UniversityMapper1.CounterEnum.MISS_MATH, 2L).runTest();
+	public void mapBadVerbal() throws IOException {
+		driver.withInput(ONE, new Text("10a,20")).withInput(ONE, new Text("10b,20"))
+				.withCounter(CounterEnum.BAD_VERBAL, 2L).runTest();
+
 	}
 
 	@Test
-	public void mapMissingVerbal() throws Exception {
-		driver.withInput(ONE,
-				new Text("(def-instance Adelphi" + "(state newyork)" + EOL + "(control private)" + EOL
-						+ "(no-of-students thous:5-10)" + EOL + "(male:female ratio:30:70)" + EOL
-						+ "(student:faculty ratio:15:1)" + EOL + "(sat math 475)" + EOL + "(expenses thous$:7-10)" + EOL
-						+ "(percent-financial-aid 60)" + EOL + "(no-applicants thous:4-7)" + EOL
-						+ "(percent-admittance 70)" + EOL + "(percent-enrolled 40)" + EOL + "(academics scale:1-5 2)"
-						+ EOL + "(social scale:1-5 2)" + EOL + "(quality-of-life scale:1-5 2)" + EOL
-						+ "(academic-emphasis business-administration)" + EOL + "(academic-emphasis biology))"))
-				.withInput(TWO,
-						new Text("(def-instance Adelphi" + "(state newyork)" + EOL + "(control private)" + EOL
-								+ "(no-of-students thous:5-10)" + EOL + "(male:female ratio:30:70)" + EOL
-								+ "(student:faculty ratio:15:1)" + EOL + "(sat math 475)" + EOL
-								+ "(expenses thous$:7-10)" + EOL + "(percent-financial-aid 60)" + EOL
-								+ "(no-applicants thous:4-7)" + EOL + "(percent-admittance 70)" + EOL
-								+ "(percent-enrolled 40)" + EOL + "(academics scale:1-5 2)" + EOL
-								+ "(social scale:1-5 2)" + EOL + "(quality-of-life scale:1-5 2)" + EOL
-								+ "(academic-emphasis business-administration)" + EOL + "(academic-emphasis biology))"))
-				.withCounter(UniversityMapper1.CounterEnum.MISS_VERBAL, 2L).runTest();
-	}
+	public void mapBadMath() throws IOException {
+		driver.withInput(ONE, new Text("10,20a")).withInput(ONE, new Text("10,20b"))
+				.withCounter(CounterEnum.BAD_MATH, 2L).runTest();
 
-	@Test
-	public void map() throws Exception {
-		driver.withInput(ONE,
-				new Text("(def-instance Adelphi" + "(state newyork)" + EOL + "(control private)" + EOL
-						+ "(no-of-students thous:5-10)" + EOL + "(male:female ratio:30:70)" + EOL
-						+ "(student:faculty ratio:15:1)" + EOL + "(sat verbal 500)" + EOL + "(sat math 475)" + EOL
-						+ "(expenses thous$:7-10)" + EOL + "(percent-financial-aid 60)" + EOL
-						+ "(no-applicants thous:4-7)" + EOL + "(percent-admittance 70)" + EOL + "(percent-enrolled 40)"
-						+ EOL + "(academics scale:1-5 2)" + EOL + "(social scale:1-5 2)" + EOL
-						+ "(quality-of-life scale:1-5 2)" + EOL + "(academic-emphasis business-administration)" + EOL
-						+ "(academic-emphasis biology))"))
-				.withOutput(VERBAL_KEY, new IntWritable(500)).withOutput(MATH_KEY, new IntWritable(475)).runTest();
 	}
 
 }

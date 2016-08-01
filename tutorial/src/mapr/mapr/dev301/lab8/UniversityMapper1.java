@@ -2,8 +2,6 @@ package mapr.dev301.lab8;
 
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -11,65 +9,42 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 public class UniversityMapper1 extends Mapper<LongWritable, Text, Text, IntWritable> {
 
-	private static String VERBAL_FIELD_BEGIN = "sat verbal";
-	private static String MATH_FIELD_BEGIN = "sat math";
-	private static char FIELD_END = ')';
-	private static final Log LOG = LogFactory.getLog(UniversityMapper1.class);
-
 	static final Text VERBAL_KEY = new Text("verbal");
 	static final Text MATH_KEY = new Text("math");
 
 	private IntWritable outv = new IntWritable();
 
 	static enum CounterEnum {
-		MISS_VERBAL, MISS_MATH, BAD_VERBAL, BAD_MATH
+		BAD_RECORD, BAD_VERBAL, BAD_MATH
 	}
 
 	@Override
 	protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-		String record = value.toString();
+		String[] split = value.toString().split(",");
 
 		// test if record has verbal
-		int verbalBeginIndex = record.indexOf(VERBAL_FIELD_BEGIN);
-		if (verbalBeginIndex < 0) {
-			context.getCounter(CounterEnum.MISS_VERBAL).increment(1);
-			LOG.debug("miss verbal: " + key.get());
-		}
-
-		// test if record has math
-		int mathBeginIndex = record.indexOf(MATH_FIELD_BEGIN);
-		if (verbalBeginIndex >= 0 && mathBeginIndex < 0) {
-			context.getCounter(CounterEnum.MISS_MATH).increment(1);
-			LOG.debug("miss math: " + key.get());
-		}
-
-		// return if no verbal or math
-		if (verbalBeginIndex < 0 || mathBeginIndex < 0) {
+		if (split.length != 2) {
+			context.getCounter(CounterEnum.BAD_RECORD).increment(1);
 			return;
 		}
 
-		boolean badValue = false; // bad value flag
-
+		boolean badValue = false;
+		
 		// get verbal value
 		int verbal = 0;
 		try {
-			verbal = Integer.parseInt(record.substring(verbalBeginIndex + VERBAL_FIELD_BEGIN.length(),
-					record.indexOf(FIELD_END, verbalBeginIndex)).trim());
-		} catch (Throwable e) {
+			verbal = Integer.parseInt(split[0]);
+		} catch (NumberFormatException e1) {
 			context.getCounter(CounterEnum.BAD_VERBAL).increment(1);
-			LOG.debug("bad verbal: " + key.get());
 			badValue = true;
 		}
 
 		// get math value
 		int math = 0;
 		try {
-			math = Integer.parseInt(record
-					.substring(mathBeginIndex + MATH_FIELD_BEGIN.length(), record.indexOf(FIELD_END, mathBeginIndex))
-					.trim());
+			math = Integer.parseInt(split[1]);
 		} catch (Throwable e) {
 			context.getCounter(CounterEnum.BAD_MATH).increment(1);
-			LOG.debug("bad math: " + key.get());
 			badValue = true;
 		}
 
