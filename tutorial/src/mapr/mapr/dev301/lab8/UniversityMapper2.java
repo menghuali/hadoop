@@ -10,9 +10,9 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 public class UniversityMapper2 extends Mapper<LongWritable, Text, Text, FloatWritable> {
 
-	static final Text OUT_KEY_XY = new Text("xy");
-	static final Text OUT_KEY_X2 = new Text("x2");
-	static final Text OUT_KEY_Y2 = new Text("y2");
+	static final Text OUT_KEY_XY = new Text("XY");
+	static final Text OUT_KEY_X2 = new Text("X2");
+	static final Text OUT_KEY_Y2 = new Text("Y2");
 	static final String CONF_VERBAL_MEAN = "UniversityMapper2.VerbalMean";
 	static final String CONF_MATH_MEAN = "UniversityMapper2.MathMean";
 
