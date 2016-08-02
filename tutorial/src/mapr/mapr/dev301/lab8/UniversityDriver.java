@@ -123,6 +123,7 @@ public class UniversityDriver extends Configured implements Tool {
 		try {
 			writer = new BufferedWriter(new OutputStreamWriter(dfs.create(new Path(outPcc))));
 			writer.write(Float.toString(sumXY / (float) Math.sqrt(sumX2 * sumY2)));
+			writer.newLine();
 		} finally {
 			writer.close();
 		}
