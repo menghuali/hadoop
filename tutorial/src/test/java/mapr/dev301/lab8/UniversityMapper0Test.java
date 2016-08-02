@@ -17,7 +17,7 @@ public class UniversityMapper0Test extends UniversityMapper0 {
 
 	@Before
 	public void setUp() throws Exception {
-		driver = new MapDriver<>(new UniversityMapper0());
+//		driver = new MapDriver<>(new UniversityMapper0());
 	}
 
 	@After

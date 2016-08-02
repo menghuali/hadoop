@@ -55,7 +55,7 @@ public class VoterDriverMiniClusterTest extends ClusterMapReduceTestCase {
 
 		fs.copyToLocalFile(outputDir, localRootPath);
 
-		Map<String, String> result = MROutputReader.read(new File(localRootPath.toString() + "/output/part-r-00000"));
+		Map<String, String> result = MROutputReader.readMap(new File(localRootPath.toString() + "/output/part-r-00000"));
 		assertNotNull(result);
 		assertEquals(6, result.size());
 		assertEquals("32.0", result.get("democrat_age_mean"));

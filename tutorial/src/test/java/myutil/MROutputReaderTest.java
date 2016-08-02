@@ -14,7 +14,7 @@ public class MROutputReaderTest {
 	public void testReadReaderString() throws Exception {
 		String lineSeparator = System.getProperty("line.separator");
 		StringReader in = new StringReader("a:1" + lineSeparator + "b:2");
-		Map<String, String> actual = MROutputReader.read(in, ":");
+		Map<String, String> actual = MROutputReader.readMap(in, ":");
 		assertNotNull(actual);
 		assertEquals(2, actual.size());
 		assertEquals("1", actual.get("a"));
@@ -24,7 +24,7 @@ public class MROutputReaderTest {
 	@Test
 	public void testReadFileString() throws Exception {
 		File file = new File("./data/sample_mr_output.txt");
-		Map<String, String> actual = MROutputReader.read(file, "\t");
+		Map<String, String> actual = MROutputReader.readMap(file, "\t");
 		assertNotNull(actual);
 		assertEquals(2, actual.size());
 		assertEquals("32.0", actual.get("democrat_age_mean"));
@@ -34,7 +34,7 @@ public class MROutputReaderTest {
 	@Test
 	public void testReadFile() throws Exception {
 		File file = new File("./data/sample_mr_output.txt");
-		Map<String, String> actual = MROutputReader.read(file);
+		Map<String, String> actual = MROutputReader.readMap(file);
 		assertNotNull(actual);
 		assertEquals(2, actual.size());
 		assertEquals("32.0", actual.get("democrat_age_mean"));

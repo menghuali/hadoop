@@ -45,7 +45,7 @@ public class VoterDriverTest extends VoterDriver {
 		int exitCode = driver.run(new String[] { INPUT_DIR, OUTPUT_DIR.toString() });
 		assertEquals(0, exitCode);
 		
-		Map<String, String> result = MROutputReader.read(new File(OUTPUT_FILE.toString()));
+		Map<String, String> result = MROutputReader.readMap(new File(OUTPUT_FILE.toString()));
 		assertNotNull(result);
 		assertEquals(6, result.size());
 		assertEquals("32.0", result.get("democrat_age_mean"));
