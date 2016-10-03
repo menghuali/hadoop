@@ -84,8 +84,12 @@ public abstract class BaseTest {
 	public void tearDown() throws Exception {
 	}
 
-	protected String generateRowKey(Class<?> clazz, String method) {
+	protected static String generateRowKey(Class<?> clazz, String method) {
 		return clazz.getCanonicalName() + "#" + method;
+	}
+
+	protected static byte[] generateRowKeyBytes(Class<?> clazz, String method) {
+		return Bytes.toBytes(clazz.getCanonicalName() + "#" + method);
 	}
 
 	protected static void resetDefaultTable() throws Exception {
@@ -101,8 +105,15 @@ public abstract class BaseTest {
 			}
 			LOG.info("Creating " + DEFAULT_TABLE_NAME_STR);
 			HTableDescriptor table = new HTableDescriptor(DEFAULT_TABLE_NAME);
-			table.addFamily(new HColumnDescriptor(DEFAULT_CF_BIN1));
-			table.addFamily(new HColumnDescriptor(DEFAULT_CF_BIN2));
+			HColumnDescriptor family1 = new HColumnDescriptor(DEFAULT_CF_BIN1);
+			family1.setMaxVersions(3);
+			int ttl = 24 * 60 * 60;
+			family1.setTimeToLive(ttl);
+			table.addFamily(family1);
+			HColumnDescriptor family2 = new HColumnDescriptor(DEFAULT_CF_BIN2);
+			family2.setMaxVersions(3);
+			family2.setTimeToLive(ttl);
+			table.addFamily(family2);
 			admin.createTable(table);
 			LOG.info("Done.");
 		} catch (Throwable e) {
