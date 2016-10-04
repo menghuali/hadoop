@@ -96,7 +96,6 @@ public abstract class BaseTest {
 		LOG.info("Reset the default HBase table for exercise.");
 		Admin admin = null;
 		try {
-			conn = hbtUtil.getConnection();
 			admin = conn.getAdmin();
 			if (admin.tableExists(DEFAULT_TABLE_NAME)) {
 				LOG.info(DEFAULT_TABLE_NAME_STR + " exists. Deleting it.");
