@@ -3,6 +3,8 @@ package hbase.base;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
@@ -72,6 +74,93 @@ public class DeleteTest extends BaseTest {
 		Get get = new Get(row);
 		Result result = table.get(get);
 		assertNull("The row of the result should be null because the entire row was deleted.", result.getRow());
+	}
+
+	@Test
+	public void testCheckAndDeleteNotNull() throws IOException {
+		Delete del = new Delete(row);
+		assertFalse("Thr row shouldn't be deleted because cf1:col1 exists",
+				table.checkAndDelete(row, DEFAULT_CF_BIN1, col1, null, del));
+	}
+
+	@Test
+	public void testCheckAndDeleteNull() throws IOException {
+		Delete del = new Delete(row);
+		assertTrue("The row should have been deleted because cf1:col3 does not exists.",
+				table.checkAndDelete(row, DEFAULT_CF_BIN1, Bytes.toBytes("col3"), null, del));
+	}
+
+	@Test
+	public void testCheckAndDeleteFail() throws IOException {
+		Delete del = new Delete(row);
+		assertFalse("The row shouldn't be deleted because it checks the over version of the cell",
+				table.checkAndDelete(row, DEFAULT_CF_BIN1, col1, Bytes.toBytes("cf1_col1_v1"), del));
+		assertNotNull("The row shouldn't be deleted.", table.get(new Get(row)).getRow());
+	}
+
+	@Test
+	public void testCheckAndDelete() throws IOException {
+		Delete del = new Delete(row);
+		assertTrue("The row should have been deleted",
+				table.checkAndDelete(row, DEFAULT_CF_BIN1, col1, Bytes.toBytes("cf1_col1_v2"), del));
+		assertNull("The row should have been deleted.", table.get(new Get(row)).getRow());
+	}
+
+	@Test
+	public void testListOfDeletes() throws IOException {
+		byte[] row1 = generateRowKeyBytes(DeleteTest.class, "testListOfDeletes#1");
+		byte[] row2 = generateRowKeyBytes(DeleteTest.class, "testListOfDeletes#2");
+		Put put1 = new Put(row1);
+		put1.addColumn(DEFAULT_CF_BIN1, col1, Bytes.toBytes("val1"));
+		Put put2 = new Put(row2);
+		put2.addColumn(DEFAULT_CF_BIN1, col1, Bytes.toBytes("val2"));
+		table.put(Arrays.asList(new Put[] { put1, put2 }));
+
+		Delete del1 = new Delete(row1);
+		Delete del2 = new Delete(row2);
+		ArrayList<Delete> dels = new ArrayList<>();
+		dels.add(del1);
+		dels.add(del2);
+		table.delete(dels);
+
+		Result[] result = table.get(Arrays.asList(new Get[] { new Get(row1), new Get(row2) }));
+		assertEquals(2, result.length);
+		assertNull(result[0].getRow());
+		assertNull(result[1].getRow());
+	}
+
+	@Test
+	public void testListOfDeletesWithFailure() throws IOException {
+		byte[] row1 = generateRowKeyBytes(DeleteTest.class, "testListOfDeletes#1");
+		byte[] row2 = generateRowKeyBytes(DeleteTest.class, "testListOfDeletes#2");
+		Put put1 = new Put(row1);
+		put1.addColumn(DEFAULT_CF_BIN1, col1, Bytes.toBytes("val1"));
+		Put put2 = new Put(row2);
+		put2.addColumn(DEFAULT_CF_BIN1, col1, Bytes.toBytes("val2"));
+		table.put(Arrays.asList(new Put[] { put1, put2 }));
+
+		Delete del1 = new Delete(row1);
+		Delete del2 = new Delete(row2);
+		// del2 causes failure because of family not exist.
+		del2.addFamily(Bytes.toBytes("BOGUS"));
+		// del3 still delete row2
+		Delete del3 = new Delete(row2);
+		ArrayList<Delete> dels = new ArrayList<>();
+		dels.add(del1);
+		dels.add(del2);
+		dels.add(del3);
+		try {
+			table.delete(dels);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		assertEquals(1, dels.size());
+
+		Result[] result = table.get(Arrays.asList(new Get[] { new Get(row1), new Get(row2) }));
+		assertEquals(2, result.length);
+		assertNull("Row1 should have been deleted by del1", result[0].getRow());
+		assertNull("Row2 should have been deleted by del3", result[1].getRow());
 	}
 
 	@Test
