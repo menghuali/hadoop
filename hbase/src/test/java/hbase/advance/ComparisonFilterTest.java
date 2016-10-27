@@ -1,4 +1,4 @@
-package hbase.base;
+package hbase.advance;
 
 import static org.junit.Assert.*;
 
