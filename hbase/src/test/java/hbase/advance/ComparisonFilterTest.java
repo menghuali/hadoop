@@ -13,8 +13,11 @@ import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.filter.BinaryComparator;
 import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
+import org.apache.hadoop.hbase.filter.DependentColumnFilter;
 import org.apache.hadoop.hbase.filter.Filter;
+import org.apache.hadoop.hbase.filter.RegexStringComparator;
 import org.apache.hadoop.hbase.filter.RowFilter;
+import org.apache.hadoop.hbase.filter.ValueFilter;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.junit.Before;
 import org.junit.Test;
@@ -92,6 +95,54 @@ public class ComparisonFilterTest extends BaseTest {
 			assertEquals(rowPrefix + "_row002", Bytes.toString(result.get(1).getRow()));
 			assertEquals(rowPrefix + "_row003", Bytes.toString(result.get(2).getRow()));
 			assertEquals(rowPrefix + "_row004", Bytes.toString(result.get(3).getRow()));
+		} finally {
+			if (table != null)
+				table.close();
+		}
+	}
+
+	@Test
+	public void testValueFilter() throws IOException {
+		Table table = null;
+		try {
+			String rowPrefix = generateRowKey(ComparisonFilterTest.class, "testValueFilter");
+			table = putRows(10, rowPrefix);
+
+			RegexStringComparator comparator = new RegexStringComparator("val00[2468]");
+			Filter filter = new ValueFilter(CompareOp.EQUAL, comparator);
+			List<Result> result = scan(table, filter);
+			assertEquals(4, result.size());
+			assertEquals(rowPrefix + "_row002", Bytes.toString(result.get(0).getRow()));
+			assertEquals(rowPrefix + "_row004", Bytes.toString(result.get(1).getRow()));
+			assertEquals(rowPrefix + "_row006", Bytes.toString(result.get(2).getRow()));
+			assertEquals(rowPrefix + "_row008", Bytes.toString(result.get(3).getRow()));
+		} finally {
+			if (table != null)
+				table.close();
+		}
+	}
+
+	@Test
+	public void testDependentColumnFilter() throws IOException {
+		Table table = null;
+		try {
+			table = conn.getTable(DEFAULT_TABLE_NAME);
+			byte[] col1 = Bytes.toBytes("col1");
+			byte[] col2 = Bytes.toBytes("col2");
+			for (int i = 0; i < 10; i++) {
+				Put put = new Put(Bytes.toBytes(String.format("row%03d", i)));
+				put.addColumn(DEFAULT_CF_BIN1, col1, Bytes.toBytes(String.format("col1_val%03d", i)));
+				put.addColumn(DEFAULT_CF_BIN1, col2, Bytes.toBytes(String.format("col2_val%03d", i)));
+				table.put(put);
+			}
+			Filter filter = new DependentColumnFilter(DEFAULT_CF_BIN1, col2, true, CompareOp.EQUAL,
+					new RegexStringComparator("col2_val00[2468]"));
+			List<Result> result = scan(table, filter);
+			assertEquals(4, result.size());
+			assertEquals("row002", Bytes.toString(result.get(0).getRow()));
+			assertEquals("row004", Bytes.toString(result.get(1).getRow()));
+			assertEquals("row006", Bytes.toString(result.get(2).getRow()));
+			assertEquals("row008", Bytes.toString(result.get(3).getRow()));
 		} finally {
 			if (table != null)
 				table.close();
