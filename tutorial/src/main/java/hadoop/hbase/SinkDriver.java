@@ -10,6 +10,8 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
+import hadoop.hbase.TableConstant.YellowPage;
+
 public class SinkDriver extends Configured implements Tool {
 
 	@Override
@@ -27,7 +29,7 @@ public class SinkDriver extends Configured implements Tool {
 		job.setMapperClass(SinkMapper.class);
 		FileInputFormat.addInputPath(job, new Path(args[0]));
 
-		TableMapReduceUtil.initTableReducerJob("test", null, job);
+		TableMapReduceUtil.initTableReducerJob(YellowPage.NAME.getNameAsString(), null, job);
 		job.setNumReduceTasks(0);
 
 		return job.waitForCompletion(true) ? 0 : 1;

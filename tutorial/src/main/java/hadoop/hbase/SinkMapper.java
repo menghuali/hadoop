@@ -1,5 +1,7 @@
 package hadoop.hbase;
 
+import static hadoop.hbase.TableConstant.YellowPage.*;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.logging.Level;
@@ -14,10 +16,6 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 public class SinkMapper extends Mapper<LongWritable, Text, ImmutableBytesWritable, Put> {
 	private static final Logger LOG = Logger.getAnonymousLogger();
-
-	static final byte[] FAMILY = Bytes.toBytes("cf");
-	static final byte[] BIZ_NAME = Bytes.toBytes("name");
-	static final byte[] ADDRESS = Bytes.toBytes("addr");
 
 	private static final String SEPARATE1 = "..";
 	private static final String SEPARATE2 = "…………………";
@@ -35,8 +33,8 @@ public class SinkMapper extends Mapper<LongWritable, Text, ImmutableBytesWritabl
 			return;
 		}
 		Put put = new Put(Bytes.toBytes(data[0]));
-		put.addColumn(FAMILY, BIZ_NAME, Bytes.toBytes(data[1]));
-		put.addColumn(FAMILY, ADDRESS, Bytes.toBytes(data[2]));
+		put.addColumn(FAMILY, COL_NAME, Bytes.toBytes(data[1]));
+		put.addColumn(FAMILY, COL_ADDR, Bytes.toBytes(data[2]));
 		context.write(new ImmutableBytesWritable(put.getRow()), put);
 	}
 
